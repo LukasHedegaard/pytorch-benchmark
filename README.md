@@ -2,17 +2,17 @@
 __Easily benchmark model inference FLOPs, latency, throughput, max allocated memory and energy consumption__
 
 <div align="left">
-  <a href="https://pypi.org/project/torch-benchmark/">
-    <img src="https://img.shields.io/pypi/pyversions/torch-benchmark" height="20" >
+  <a href="https://pypi.org/project/pytorch-benchmark/">
+    <img src="https://img.shields.io/pypi/pyversions/pytorch-benchmark" height="20" >
   </a>
-  <a href="https://badge.fury.io/py/torch-benchmark">
-    <img src="https://badge.fury.io/py/torch-benchmark.svg" height="20" >
+  <a href="https://badge.fury.io/py/pytorch-benchmark">
+    <img src="https://badge.fury.io/py/pytorch-benchmark.svg" height="20" >
   </a>
-  <!-- <a href="https://pepy.tech/project/torch-benchmark">
-    <img src="https://pepy.tech/badge/torch-benchmark/month" height="20">
+  <!-- <a href="https://pepy.tech/project/pytorch-benchmark">
+    <img src="https://pepy.tech/badge/pytorch-benchmark/month" height="20">
   </a> -->
-  <a href="https://codecov.io/gh/LukasHedegaard/torch-benchmark">
-    <img src="https://codecov.io/gh/LukasHedegaard/torch-benchmark/branch/main/graph/badge.svg?token=??????"/>
+  <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
+    <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=??????"/>
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" height="20">
@@ -20,8 +20,8 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
   <a href="https://github.com/psf/black">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" height="20">
   </a>
-  <a href="https://www.codefactor.io/repository/github/lukashedegaard/torch-benchmark/overview/main">
-    <img src="https://www.codefactor.io/repository/github/lukashedegaard/torch-benchmark/badge/main" alt="CodeFactor" />
+  <a href="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/overview/main">
+    <img src="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/badge/main" alt="CodeFactor" />
   </a>
   <sup>*</sup>
 </div>
@@ -29,7 +29,7 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
 
 ## Install 
 ```bash
-pip install continual-inference
+pip install pytorch-benchmark
 ```
 
 ## Usage 
@@ -118,7 +118,7 @@ If you like the tool and use it in you research, please consider citing it:
 @article{hedegaard2022torchbenchmark,
   title={Torch Benchmark},
   author={Lukas Hedegaard},
-  journal={GitHub. Note: https://github.com/LukasHedegaard/torch-benchmark},
+  journal={GitHub. Note: https://github.com/LukasHedegaard/pytorch-benchmark},
   year={2022}
 }
 ```
