@@ -68,7 +68,7 @@ def measure_allocated_memory(model, sample, print_details=False):
     torch.cuda.reset_peak_memory_stats(device=model_device)
     pre_mem = torch.cuda.memory_allocated(device=model_device)
 
-    model(sample)  # run inferece
+    model(sample.to(device=model_device)).to(device="cpu")
 
     if print_details:
         logger.info(torch.cuda.memory_summary(device=model_device, abbreviated=True))
@@ -80,9 +80,10 @@ def measure_allocated_memory(model, sample, print_details=False):
 
 
 def warm_up(model, sample, num_runs=10):
+    model_device = get_device(model)
     batch_size = sample.shape[0]
     for _ in tqdm(range(num_runs), desc=f"Warming up with batch_size={batch_size}"):
-        model(sample)
+        model(sample.to(device=model_device)).to(device="cpu")
 
 
 def measure_detailed_inference_timing(model, sample):
@@ -184,28 +185,28 @@ def measure_energy(model, sample, print_details=False, include_transfer_costs=Tr
         test_fn = test_without_transfer
         sample = sample.to(model_device)
 
-    # Try carbon-tracker
-    try:
-        from carbontracker import tracker
+    # # Try carbon-tracker: The library is still too young
+    # try:
+    #     from carbontracker import tracker
 
-        # Check if components are available (TODO: find a less brittle implementation for this)
-        pids = tracker.CarbonTracker._get_pids(None)
-        components = tracker.component.create_components(
-            components="all", pids=pids, devices_by_pid=False
-        )
-        if not any([cmp for cmp in components if cmp.available()]):
-            raise Exception("Valid CarbonTracker device not available")
+    #     # Check if components are available (TODO: find a less brittle implementation for this)
+    #     pids = tracker.CarbonTracker._get_pids(None)
+    #     components = tracker.component.create_components(
+    #         components="all", pids=pids, devices_by_pid=False
+    #     )
+    #     if not any([cmp for cmp in components if cmp.available()]):
+    #         raise Exception("Valid CarbonTracker device not available")
 
-        tracker = tracker.CarbonTracker(epochs=1, verbose=print_details)
-        tracker.epoch_start()
-        test_fn()
-        tracker.epoch_end()
+    #     tracker = tracker.CarbonTracker(epochs=1, verbose=print_details)
+    #     tracker.epoch_start()
+    #     test_fn()
+    #     tracker.epoch_end()
 
-        # Grab results from logger
-        # TODO
+    #     # Grab results from logger
+    #     # TODO
 
-    except Exception:
-        pass
+    # except Exception:
+    #     pass
 
     # Try jetson power
     try:
@@ -220,7 +221,7 @@ def measure_energy(model, sample, print_details=False, include_transfer_costs=Tr
 
     if not _is_valid(inference_joules):
         logger.error(
-            "Unable to measure energy consumption. Device must be an Intel CPU with RAPL support, a NVIDIA GPU, or a NVIDIA Jetson"
+            "Unable to measure energy consumption. Device must be a NVIDIA Jetson."
         )
 
     return inference_joules
@@ -272,7 +273,9 @@ def benchmark(
 
     # Measure Allocated Memory
     if model_device.type == "cuda":
-        pre_mem, post_mem, max_mem = measure_allocated_memory(model, sample)
+        pre_mem, post_mem, max_mem = measure_allocated_memory(
+            model, sample, print_details
+        )
         results["pre_inference_memory"] = pre_mem
         results["max_inference_memory"] = max_mem
         results["post_inference_memory"] = post_mem
@@ -297,7 +300,7 @@ def benchmark(
         s = sample1 if bs == 1 else sample
 
         # Inference timing
-        warm_up(model, s, num_runs=min(5, num_runs // 10))
+        warm_up(model, s, num_runs=max(5, num_runs // 10))
         if print_details:
             measure_detailed_inference_timing(model, s)
 

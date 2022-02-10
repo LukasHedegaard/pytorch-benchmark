@@ -10,6 +10,14 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 ## [Unreleased]
 
 
+## [0.1.2] - 2022-02-10]
+### Fixed
+- GPU compatibility.
+
+### Removed
+- Carbon-tracker energy measurement. Library is still too immature at this point.
+
+
 ## [0.1.1] - 2022-02-10]
 ### Added
 - Initial version.

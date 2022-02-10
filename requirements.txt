@@ -6,4 +6,3 @@ psutil>=5.9
 gputil>=1.4
 py-cpuinfo>=7.0
 pyyaml >= 6.0
-carbontracker >= 1.1
