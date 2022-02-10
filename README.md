@@ -12,7 +12,7 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
     <img src="https://pepy.tech/badge/pytorch-benchmark/month" height="20">
   </a> -->
   <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
-    <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=??????"/>
+    <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=B91XGSKSFJ"/>
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" height="20">
@@ -23,9 +23,7 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
   <a href="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/overview/main">
     <img src="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/badge/main" alt="CodeFactor" />
   </a>
-  <sup>*</sup>
 </div>
-
 
 ## Install 
 ```bash
