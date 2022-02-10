@@ -114,7 +114,7 @@ Feature limitataions:
 If you like the tool and use it in you research, please consider citing it:
 ```bibtex
 @article{hedegaard2022torchbenchmark,
-  title={Torch Benchmark},
+  title={PyTorch Benchmark},
   author={Lukas Hedegaard},
   journal={GitHub. Note: https://github.com/LukasHedegaard/pytorch-benchmark},
   year={2022}
