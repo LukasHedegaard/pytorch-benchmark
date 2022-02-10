@@ -36,7 +36,7 @@ clean:
 ## Test the setup
 test:
 	@echo ⚡⚡⚡ Testing ⚡⚡⚡
-	py.test --cov torch_benchmark --cov-report term-missing
+	py.test --cov pytorch_benchmark --cov-report term-missing
 
 
 ## Upload to codecov.io

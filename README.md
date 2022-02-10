@@ -1,4 +1,4 @@
-# ⏱ torch-benchmark
+# ⏱ pytorch-benchmark
 __Easily benchmark model inference FLOPs, latency, throughput, max allocated memory and energy consumption__
 
 <div align="left">
@@ -35,8 +35,8 @@ pip install continual-inference
 ## Usage 
 ```python
 import torch
-from torch_benchmark import benchmark
 from torchvision.models import efficientnet_b0
+from pytorch_benchmark import benchmark
 
 
 model = efficientnet_b0()

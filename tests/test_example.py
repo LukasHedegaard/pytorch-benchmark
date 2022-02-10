@@ -1,8 +1,10 @@
-def test_example():
-    import torch
-    from torchvision.models import efficientnet_b0
+import torch
+from torchvision.models import efficientnet_b0
 
-    from torch_benchmark import benchmark
+from pytorch_benchmark import benchmark
+
+
+def test_example():
 
     model = efficientnet_b0()
     sample = torch.randn(2, 3, 224, 224)  # (B, C, H, W)
