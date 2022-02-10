@@ -1,0 +1,13 @@
+sphinx>=3.0
+nbsphinx>=0.8
+pandoc>=1.0
+docutils>=0.16
+sphinxcontrib-fulltoc>=1.0
+sphinxcontrib-mockautodoc
+https://github.com/LukasHedegaard/ride_sphinx_theme/archive/master.zip#egg=ride-sphinx-theme
+sphinx-autodoc-typehints>=1.0
+sphinx-paramlinks>=0.4.0
+sphinx-togglebutton>=0.2
+sphinx-copybutton>=0.3
+sphinx-autoapi>=1.7
+m2r2>=0.2

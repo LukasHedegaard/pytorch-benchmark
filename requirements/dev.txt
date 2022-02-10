@@ -1,0 +1,9 @@
+black
+flake8
+flake8-black
+isort>=5.7
+pytest~=6.0
+pytest-cov
+ptflops>=0.6
+numpy
+torchvision

@@ -1,0 +1,28 @@
+name: Codecov workflow
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup Python  
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.9
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install .[dev]
+    - name: Generate coverage report
+      run: |
+        python -m pytest --cov continual --cov-report=xml -m "not skip_cicd"
+    - name: Upload coverage to Codecov  
+      run: |
+        bash <(curl -s https://codecov.io/bash) -c -F unittests -t ${{ secrets.CODECOV_TOKEN }}
+
