@@ -85,7 +85,7 @@ def warm_up(model, sample, num_runs=10):
         model(sample)
 
 
-def measure_detailed_inference_timing(model, sample, print_details):
+def measure_detailed_inference_timing(model, sample):
     model_device = get_device(model)
 
     try:
@@ -298,8 +298,8 @@ def benchmark(
 
         # Inference timing
         warm_up(model, s, num_runs=min(5, num_runs // 10))
-        if print_details and model_device.type == "cuda":
-            measure_detailed_inference_timing(model, s, print_details)
+        if print_details:
+            measure_detailed_inference_timing(model, s)
 
         timing[f"batch_size_{bs}"] = measure_repeated_inference_timing(
             model, s, num_runs
