@@ -252,7 +252,7 @@ Usage assumptions:
 - The model has as a `__call__` method that takes the sample, i.e. `model(sample)`.
 - The Model also works if the sample had a batch size of 1 (first dimension).
 
-Feature limitataions:
+Feature limitations:
 - Allocated memory uses [torch.cuda.max_memory_allocated](https://pytorch.org/docs/stable/generated/torch.cuda.max_memory_allocated.html), which is only available if the model resides on a CUDA device.
 - Energy consumption can only be measured on NVIDIA Jetson platforms at the moment.
 
