@@ -10,6 +10,11 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 ## [Unreleased]
 
 
+## [0.2.0] - 2022-02-11]
+### Added
+- Overloads for benchmark parameters and functions to allow benchmark of custom classes.
+
+
 ## [0.1.2] - 2022-02-10]
 ### Fixed
 - GPU compatibility.
