@@ -250,10 +250,10 @@ results = benchmark(model, sample, num_runs=100)
 ## Limitations
 Usage assumptions:
 - The model has as a `__call__` method that takes the sample, i.e. `model(sample)`.
-- The Model also works if the sample had a batch size of 1 (first dimension).
+- The Model works for any batch size (first dimension).
 
 Feature limitations:
-- Allocated memory uses [torch.cuda.max_memory_allocated](https://pytorch.org/docs/stable/generated/torch.cuda.max_memory_allocated.html), which is only available if the model resides on a CUDA device.
+- Allocated memory measurements are only available on CUDA devices.
 - Energy consumption can only be measured on NVIDIA Jetson platforms at the moment.
 
 
