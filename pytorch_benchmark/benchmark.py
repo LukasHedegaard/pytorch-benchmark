@@ -1,5 +1,6 @@
 from logging import getLogger
 from time import time
+from typing import Any, Callable
 
 import numpy as np
 import torch
@@ -57,18 +58,32 @@ def get_device(model):
 
 
 def measure_params(model):
-    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    num_params = _INVALID
+
+    try:
+        num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    except AttributeError as e:
+        logger.error(f"Unable to measure model params due to error: {e}")
+
     return num_params
 
 
-def measure_allocated_memory(model, sample, print_details=False):
-    model_device = get_device(model)
+def measure_allocated_memory(
+    model,
+    sample,
+    model_device,
+    transfer_to_device_fn=torch.Tensor.to,
+    print_details=False,
+):
     assert model_device.type == "cuda"
 
     torch.cuda.reset_peak_memory_stats(device=model_device)
     pre_mem = torch.cuda.memory_allocated(device=model_device)
 
-    model(sample.to(device=model_device)).to(device="cpu")
+    transfer_to_device_fn(
+        model(transfer_to_device_fn(sample, model_device)),
+        "cpu",
+    )
 
     if print_details:
         logger.info(torch.cuda.memory_summary(device=model_device, abbreviated=True))
@@ -79,21 +94,33 @@ def measure_allocated_memory(model, sample, print_details=False):
     return pre_mem, post_mem, max_mem
 
 
-def warm_up(model, sample, num_runs=10):
-    model_device = get_device(model)
-    batch_size = sample.shape[0]
+def warm_up(
+    model,
+    sample,
+    model_device,
+    transfer_to_device_fn=torch.Tensor.to,
+    num_runs=10,
+    batch_size: int = None,
+):
     for _ in tqdm(range(num_runs), desc=f"Warming up with batch_size={batch_size}"):
-        model(sample.to(device=model_device)).to(device="cpu")
+        transfer_to_device_fn(
+            model(transfer_to_device_fn(sample, model_device)),
+            "cpu",
+        )
 
 
-def measure_detailed_inference_timing(model, sample):
-    model_device = get_device(model)
+def measure_detailed_inference_timing(
+    model, sample, model_device, transfer_to_device_fn=torch.Tensor.to
+):
 
     try:
         with torch.no_grad(), torch.autograd.profiler.profile(
             use_cuda=(model_device.type == "cuda"), profile_memory=True
         ) as prof:
-            model(sample.to(device=model_device)).to(device="cpu")
+            transfer_to_device_fn(
+                model(transfer_to_device_fn(sample, model_device)),
+                "cpu",
+            )
 
         detailed_timing = prof.key_averages().table(sort_by="self_cpu_time_total")
         logger.info(detailed_timing)
@@ -104,10 +131,14 @@ def measure_detailed_inference_timing(model, sample):
         )
 
 
-def measure_repeated_inference_timing(model, sample, num_runs):
-    model_device = get_device(model)
-
-    batch_size = sample.shape[0]
+def measure_repeated_inference_timing(
+    model,
+    sample,
+    model_device,
+    transfer_to_device_fn=torch.Tensor.to,
+    num_runs=100,
+    batch_size: int = None,
+):
 
     t_c2d = []
     t_inf = []
@@ -118,11 +149,11 @@ def measure_repeated_inference_timing(model, sample, num_runs):
         range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
     ):
         start_on_cpu = time()
-        device_sample = sample.to(device=model_device)
+        device_sample = transfer_to_device_fn(sample, model_device)
         start_on_device = time()
         device_result = model(device_sample)
         stop_on_device = time()
-        device_result.to(device="cpu")  # discard result
+        transfer_to_device_fn(device_result, "cpu")
         stop_on_cpu = time()
 
         t_c2d.append(start_on_device - start_on_cpu)
@@ -167,13 +198,22 @@ def measure_repeated_inference_timing(model, sample, num_runs):
     return results_dict
 
 
-def measure_energy(model, sample, print_details=False, include_transfer_costs=True):
+def measure_energy(
+    model,
+    sample,
+    model_device,
+    transfer_to_device_fn=torch.Tensor.to,
+    print_details=False,
+    include_transfer_costs=True,
+):
     inference_joules = _INVALID
-    model_device = get_device(model)
 
     def test_with_transfer():
         nonlocal model, sample
-        model(sample.to(device=model_device)).to(device="cpu")
+        transfer_to_device_fn(
+            model(transfer_to_device_fn(sample, model_device)),
+            "cpu",
+        )
 
     def test_without_transfer():
         nonlocal model, sample
@@ -236,32 +276,44 @@ def benchmark(
     sample: torch.Tensor,
     num_runs: int = 100,
     print_details=False,
+    get_device_fn: Callable[[Any], torch.device] = get_device,
+    transfer_to_device_fn=torch.Tensor.to,
+    sample_with_batch_size1: Any = None,
+    batch_size: int = None,
 ):
     results = {}
-    batch_size, rest_shape = sample.shape[0], sample.shape[1:]
+    batch_size = batch_size or sample.shape[0]
 
-    sample = sample.to(device="cpu")
+    sample = transfer_to_device_fn(sample, "cpu")
 
     # Prepare sample with batch size 1
-    sample1_shape = (1, *rest_shape)
-    sample1 = torch.randn(sample1_shape)
+    if sample_with_batch_size1:
+        sample1 = sample_with_batch_size1
+    else:
+        sample1_shape = (1, *sample.shape[1:])
+        sample1 = torch.randn(sample1_shape)
 
-    prevously_training = model.training
-    model.eval()
+    prevously_training = getattr(model, "training", False)
+    if hasattr(model, "eval"):
+        model.eval()
 
     # Get machine info
     machine_info = get_machine_info()
     results["machine_info"] = machine_info
     logger.info(fmt({"Machine info": machine_info}))
 
-    model_device = get_device(model)
+    model_device = get_device_fn(model)
+    assert isinstance(
+        model_device, torch.device
+    ), "model_device should be a `torch.device`"
     results["device"] = model_device.type
     logger.info(f"Model device: {model_device}")
 
     # Measure params
     params = measure_params(model)
-    results["params"] = params
-    logger.info(f"Model parameters: {params} ({format_num(params)})")
+    if _is_valid(params):
+        results["params"] = params
+        logger.info(f"Model parameters: {params} ({format_num(params)})")
 
     # Measure FLOPs
     try_custom_warmup(model, sample1)
@@ -274,7 +326,7 @@ def benchmark(
     # Measure Allocated Memory
     if model_device.type == "cuda":
         pre_mem, post_mem, max_mem = measure_allocated_memory(
-            model, sample, print_details
+            model, sample, model_device, transfer_to_device_fn, print_details
         )
         results["pre_inference_memory"] = pre_mem
         results["max_inference_memory"] = max_mem
@@ -296,23 +348,37 @@ def benchmark(
     # Measure inference timing
     timing = {}
     energy = {}
-    for bs in set([1, batch_size]):
+    for bs in sorted(set([1, batch_size])):
         s = sample1 if bs == 1 else sample
 
         # Inference timing
-        warm_up(model, s, num_runs=max(5, num_runs // 10))
+        warm_up(
+            model,
+            s,
+            model_device,
+            transfer_to_device_fn,
+            num_runs=max(1, num_runs // 10),
+            batch_size=batch_size,
+        )
         if print_details:
-            measure_detailed_inference_timing(model, s)
+            measure_detailed_inference_timing(model, s, model_device)
 
         timing[f"batch_size_{bs}"] = measure_repeated_inference_timing(
-            model, s, num_runs
+            model,
+            s,
+            model_device,
+            transfer_to_device_fn,
+            num_runs,
+            batch_size,
         )
         logger.info(
             fmt({f"Timing results (batch_size={bs})": timing[f"batch_size_{bs}"]})
         )
 
         # Energy measurement
-        energy_joules = measure_energy(model, sample, print_details)
+        energy_joules = measure_energy(
+            model, sample, model_device, transfer_to_device_fn, print_details
+        )
         if _is_valid(energy_joules):
             energy_kwh = energy_joules / 3.6e6
             energy[f"batch_size_{bs}"] = {
