@@ -12,9 +12,9 @@ def test_example():
     if torch.cuda.is_available():
         model = model.cuda()
 
-    sample = torch.randn(8, 3, 224, 224)  # (B, C, H, W)
+    sample = torch.randn(2, 3, 224, 224)  # (B, C, H, W)
 
-    results = benchmark(model, sample, num_runs=100, print_details=True)
+    results = benchmark(model, sample, num_runs=10, print_details=True)
 
     for prop in {"device", "flops", "params", "timing"}:
         assert prop in results
