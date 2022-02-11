@@ -243,7 +243,6 @@ def measure_energy(
     #     tracker.epoch_end()
 
     #     # Grab results from logger
-    #     # TODO
 
     # except Exception:
     #     pass
