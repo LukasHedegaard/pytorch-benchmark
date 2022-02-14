@@ -8,9 +8,9 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
   <a href="https://badge.fury.io/py/pytorch-benchmark">
     <img src="https://badge.fury.io/py/pytorch-benchmark.svg" height="20" >
   </a>
-  <!-- <a href="https://pepy.tech/project/pytorch-benchmark">
+  <a href="https://pepy.tech/project/pytorch-benchmark">
     <img src="https://pepy.tech/badge/pytorch-benchmark/month" height="20">
-  </a> -->
+  </a>
   <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
     <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=B91XGSKSFJ"/>
   </a>
