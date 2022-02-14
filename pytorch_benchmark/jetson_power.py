@@ -9,24 +9,31 @@ import time
 from logging import getLogger
 from time import sleep
 
-logger = getLogger("torch_benchmark")
+logger = getLogger("pytorch_benchmark")
 
 
 class PowerEstimator:
-    def __init__(self, idle_load_duration=3, idle_load_samples=10, sampling_rate=30):
+    def __init__(
+        self,
+        idle_load_duration=3,
+        idle_load_samples=10,
+        sampling_rate=30,
+        print_fn=logger.debug,
+    ):
         """
         Creates a PowerEstimator object for measuring energy consumption
         :param idle_load_duration: Total time duration for estimating idle energy consumption
         :param idle_load_samples: Number of samples to be used for idle energy consumption estimation
         :param sampling_rate: Sampling rate (Hz) to be used when estimating the energy consumption
         """
+        self.print_fn = print_fn
 
         self.devices = []
         self._device_scan("/sys/bus/i2c/drivers/ina3221x/")
         # self._device_scan('/sys/devices/3160000.i2c/i2c-0/')
 
         assert len(self.devices) > 0, "Device scan did not find any Jetson devices"
-        logger.debug("Jetson PowerLogger found %d power devices" % (len(self.devices)))
+        self.print_fn("Jetson PowerLogger found %d power devices" % (len(self.devices)))
 
         self.idle_load = 0
         self._estimate_standby_load(idle_load_duration, idle_load_samples)
@@ -40,12 +47,12 @@ class PowerEstimator:
                     cur_path = os.path.join(base_path, folder, file)
                     if os.path.exists(cur_path):
                         self.devices.append(cur_path)
-                        logger.debug("Device found @", cur_path)
+                        self.print_fn("Device found @", cur_path)
                     elif os.path.exists(cur_path.replace("iio_device", "iio:device0")):
                         self.devices.append(
                             cur_path.replace("iio_device", "iio:device0")
                         )
-                        logger.debug(
+                        self.print_fn(
                             "Device found @",
                             cur_path.replace("iio_device", "iio:device0"),
                         )

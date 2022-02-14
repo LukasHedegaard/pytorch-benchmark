@@ -205,6 +205,7 @@ def measure_energy(
     transfer_to_device_fn=torch.Tensor.to,
     print_details=False,
     include_transfer_costs=True,
+    print_fn=logger.info,
 ):
     inference_joules = _INVALID
 
@@ -251,7 +252,7 @@ def measure_energy(
     try:
         from .jetson_power import PowerEstimator
 
-        p_est = PowerEstimator()
+        p_est = PowerEstimator(print_fn=print_fn)
         # index 0 is total energy, index 1 is energy over idle consumption:
         total_joules = p_est.estimate_fn_power(test_fn)[0] / 1000
         inference_joules = total_joules
@@ -279,6 +280,7 @@ def benchmark(
     transfer_to_device_fn=torch.Tensor.to,
     sample_with_batch_size1: Any = None,
     batch_size: int = None,
+    print_fn=logger.info,
 ):
     results = {}
     batch_size = batch_size or sample.shape[0]
@@ -299,20 +301,20 @@ def benchmark(
     # Get machine info
     machine_info = get_machine_info()
     results["machine_info"] = machine_info
-    logger.info(fmt({"Machine info": machine_info}))
+    print_fn(fmt({"Machine info": machine_info}))
 
     model_device = get_device_fn(model)
     assert isinstance(
         model_device, torch.device
     ), "model_device should be a `torch.device`"
     results["device"] = model_device.type
-    logger.info(f"Model device: {model_device}")
+    print_fn(f"Model device: {model_device}")
 
     # Measure params
     params = measure_params(model)
     if _is_valid(params):
         results["params"] = params
-        logger.info(f"Model parameters: {params} ({format_num(params)})")
+        print_fn(f"Model parameters: {params} ({format_num(params)})")
 
     # Measure FLOPs
     try_custom_warmup(model, sample1)
@@ -320,7 +322,7 @@ def benchmark(
     flops = measure_flops(model, sample1, print_details)
     if _is_valid(flops):
         results["flops"] = flops
-        logger.info(f"Model FLOPs: {flops} ({format_num(flops)})")
+        print_fn(f"Model FLOPs: {flops} ({format_num(flops)})")
 
     # Measure Allocated Memory
     if model_device.type == "cuda":
@@ -330,13 +332,13 @@ def benchmark(
         results["pre_inference_memory"] = pre_mem
         results["max_inference_memory"] = max_mem
         results["post_inference_memory"] = post_mem
-        logger.info(
+        print_fn(
             f"Allocated GPU memory prior to inference: {pre_mem} ({format_num(pre_mem, bytes=True)})"
         )
-        logger.info(
+        print_fn(
             f"Allocated GPU memory after to inference: {post_mem} ({format_num(post_mem, bytes=True)})"
         )
-        logger.info(
+        print_fn(
             f"Max allocated GPU memory during inference: {max_mem} ({format_num(max_mem, bytes=True)})"
         )
     else:
@@ -371,13 +373,18 @@ def benchmark(
                 num_runs,
                 batch_size,
             )
-            logger.info(
+            print_fn(
                 fmt({f"Timing results (batch_size={bs})": timing[f"batch_size_{bs}"]})
             )
 
             # Energy measurement
             energy_joules = measure_energy(
-                model, sample, model_device, transfer_to_device_fn, print_details
+                model,
+                sample,
+                model_device,
+                transfer_to_device_fn,
+                print_details,
+                print_fn,
             )
             if _is_valid(energy_joules):
                 energy_kwh = energy_joules / 3.6e6
@@ -385,7 +392,15 @@ def benchmark(
                     "joules": energy_joules,
                     "kWh": energy_kwh,
                 }
-                logger.info(f"Inference energy: {energy_joules} J ({energy_kwh} kWh)")
+                print_fn(
+                    fmt(
+                        {
+                            f"Energy results (batch_size={bs})": energy[
+                                f"batch_size_{bs}"
+                            ]
+                        }
+                    )
+                )
 
     results["timing"] = timing
     if energy:
