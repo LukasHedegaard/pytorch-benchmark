@@ -9,6 +9,10 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.2.2] - 2022-02-14]
+### Add
+- Option to redirect info prints.
+
 
 ## [0.2.1] - 2022-02-14]
 ### Fixed
