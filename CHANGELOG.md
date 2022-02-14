@@ -10,6 +10,11 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 ## [Unreleased]
 
 
+## [0.2.1] - 2022-02-14]
+### Fixed
+- Added missing with torch.no_grad
+
+
 ## [0.2.0] - 2022-02-11]
 ### Added
 - Overloads for benchmark parameters and functions to allow benchmark of custom classes.
