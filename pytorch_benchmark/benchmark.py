@@ -145,21 +145,22 @@ def measure_repeated_inference_timing(
     t_d2c = []
     t_tot = []
 
-    for _ in tqdm(
-        range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
-    ):
-        start_on_cpu = time()
-        device_sample = transfer_to_device_fn(sample, model_device)
-        start_on_device = time()
-        device_result = model(device_sample)
-        stop_on_device = time()
-        transfer_to_device_fn(device_result, "cpu")
-        stop_on_cpu = time()
+    with torch.no_grad():
+        for _ in tqdm(
+            range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
+        ):
+            start_on_cpu = time()
+            device_sample = transfer_to_device_fn(sample, model_device)
+            start_on_device = time()
+            device_result = model(device_sample)
+            stop_on_device = time()
+            transfer_to_device_fn(device_result, "cpu")
+            stop_on_cpu = time()
 
-        t_c2d.append(start_on_device - start_on_cpu)
-        t_inf.append(stop_on_device - start_on_device)
-        t_d2c.append(stop_on_cpu - stop_on_device)
-        t_tot.append(stop_on_cpu - start_on_cpu)
+            t_c2d.append(start_on_device - start_on_cpu)
+            t_inf.append(stop_on_device - start_on_device)
+            t_d2c.append(stop_on_cpu - stop_on_device)
+            t_tot.append(stop_on_cpu - start_on_cpu)
 
     results_dict = {}
 
