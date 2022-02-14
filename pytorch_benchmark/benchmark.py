@@ -114,7 +114,7 @@ def measure_detailed_inference_timing(
 ):
 
     try:
-        with torch.no_grad(), torch.autograd.profiler.profile(
+        with torch.autograd.profiler.profile(
             use_cuda=(model_device.type == "cuda"), profile_memory=True
         ) as prof:
             transfer_to_device_fn(
@@ -145,22 +145,21 @@ def measure_repeated_inference_timing(
     t_d2c = []
     t_tot = []
 
-    with torch.no_grad():
-        for _ in tqdm(
-            range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
-        ):
-            start_on_cpu = time()
-            device_sample = transfer_to_device_fn(sample, model_device)
-            start_on_device = time()
-            device_result = model(device_sample)
-            stop_on_device = time()
-            transfer_to_device_fn(device_result, "cpu")
-            stop_on_cpu = time()
+    for _ in tqdm(
+        range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
+    ):
+        start_on_cpu = time()
+        device_sample = transfer_to_device_fn(sample, model_device)
+        start_on_device = time()
+        device_result = model(device_sample)
+        stop_on_device = time()
+        transfer_to_device_fn(device_result, "cpu")
+        stop_on_cpu = time()
 
-            t_c2d.append(start_on_device - start_on_cpu)
-            t_inf.append(stop_on_device - start_on_device)
-            t_d2c.append(stop_on_cpu - stop_on_device)
-            t_tot.append(stop_on_cpu - start_on_cpu)
+        t_c2d.append(start_on_device - start_on_cpu)
+        t_inf.append(stop_on_device - start_on_device)
+        t_d2c.append(stop_on_cpu - stop_on_device)
+        t_tot.append(stop_on_cpu - start_on_cpu)
 
     results_dict = {}
 
@@ -348,44 +347,45 @@ def benchmark(
     # Measure inference timing
     timing = {}
     energy = {}
-    for bs in sorted(set([1, batch_size])):
-        s = sample1 if bs == 1 else sample
+    with torch.no_grad():
+        for bs in sorted(set([1, batch_size])):
+            s = sample1 if bs == 1 else sample
 
-        # Inference timing
-        warm_up(
-            model,
-            s,
-            model_device,
-            transfer_to_device_fn,
-            num_runs=max(1, num_runs // 10),
-            batch_size=batch_size,
-        )
-        if print_details:
-            measure_detailed_inference_timing(model, s, model_device)
+            # Inference timing
+            warm_up(
+                model,
+                s,
+                model_device,
+                transfer_to_device_fn,
+                num_runs=max(1, num_runs // 10),
+                batch_size=batch_size,
+            )
+            if print_details:
+                measure_detailed_inference_timing(model, s, model_device)
 
-        timing[f"batch_size_{bs}"] = measure_repeated_inference_timing(
-            model,
-            s,
-            model_device,
-            transfer_to_device_fn,
-            num_runs,
-            batch_size,
-        )
-        logger.info(
-            fmt({f"Timing results (batch_size={bs})": timing[f"batch_size_{bs}"]})
-        )
+            timing[f"batch_size_{bs}"] = measure_repeated_inference_timing(
+                model,
+                s,
+                model_device,
+                transfer_to_device_fn,
+                num_runs,
+                batch_size,
+            )
+            logger.info(
+                fmt({f"Timing results (batch_size={bs})": timing[f"batch_size_{bs}"]})
+            )
 
-        # Energy measurement
-        energy_joules = measure_energy(
-            model, sample, model_device, transfer_to_device_fn, print_details
-        )
-        if _is_valid(energy_joules):
-            energy_kwh = energy_joules / 3.6e6
-            energy[f"batch_size_{bs}"] = {
-                "joules": energy_joules,
-                "kWh": energy_kwh,
-            }
-            logger.info(f"Inference energy: {energy_joules} J ({energy_kwh} kWh)")
+            # Energy measurement
+            energy_joules = measure_energy(
+                model, sample, model_device, transfer_to_device_fn, print_details
+            )
+            if _is_valid(energy_joules):
+                energy_kwh = energy_joules / 3.6e6
+                energy[f"batch_size_{bs}"] = {
+                    "joules": energy_joules,
+                    "kWh": energy_kwh,
+                }
+                logger.info(f"Inference energy: {energy_joules} J ({energy_kwh} kWh)")
 
     results["timing"] = timing
     if energy:
