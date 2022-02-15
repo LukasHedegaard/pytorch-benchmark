@@ -18,4 +18,4 @@ def format_time(seconds):
         return "{:.3f} s".format(time_us / US_IN_SECOND)
     if time_us >= US_IN_MS:
         return "{:.3f} ms".format(time_us / US_IN_MS)
-    return "{:.3f} µs".format(time_us)
+    return "{:.3f} us".format(time_us)

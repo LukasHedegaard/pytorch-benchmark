@@ -9,7 +9,7 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
     <img src="https://badge.fury.io/py/pytorch-benchmark.svg" height="20" >
   </a>
   <a href="https://pepy.tech/project/pytorch-benchmark">
-    <img src="https://pepy.tech/badge/pytorch-benchmark/month" height="20">
+    <img src="https://pepy.tech/badge/pytorch-benchmark/week" height="20">
   </a>
   <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
     <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=B91XGSKSFJ"/>
@@ -262,7 +262,7 @@ Trying to benchmark a custom class, which is not a `torch.nn.Module`?
 ## Citation
 If you like the tool and use it in you research, please consider citing it:
 ```bibtex
-@article{hedegaard2022torchbenchmark,
+@article{hedegaard2022pytorchbenchmark,
   title={PyTorch Benchmark},
   author={Lukas Hedegaard},
   journal={GitHub. Note: https://github.com/LukasHedegaard/pytorch-benchmark},

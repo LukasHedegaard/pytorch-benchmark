@@ -9,8 +9,18 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+
+## [0.3.0] - 2022-02-15]
+### Added
+- Memory measurement for each batch size.
+- Repeated energy measurement.
+
+### Changed
+- Number formatting to use u instead of µ.
+
+
 ## [0.2.2] - 2022-02-14]
-### Add
+### Added
 - Option to redirect info prints.
 
 
