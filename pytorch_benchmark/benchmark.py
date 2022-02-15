@@ -146,7 +146,7 @@ def measure_repeated_inference_timing(
     t_tot = []
 
     for _ in tqdm(
-        range(num_runs), desc=f"Measuring inference with batch_size={batch_size}"
+        range(num_runs), desc=f"Measuring inference for batch_size={batch_size}"
     ):
         start_on_cpu = time()
         device_sample = transfer_to_device_fn(sample, model_device)
@@ -203,7 +203,8 @@ def measure_energy(
     sample,
     model_device,
     transfer_to_device_fn=torch.Tensor.to,
-    print_details=False,
+    num_runs=100,
+    batch_size: int = None,
     include_transfer_costs=True,
     print_fn=logger.info,
 ):
@@ -254,8 +255,12 @@ def measure_energy(
 
         p_est = PowerEstimator(print_fn=print_fn)
         # index 0 is total energy, index 1 is energy over idle consumption:
-        total_joules = p_est.estimate_fn_power(test_fn)[0] / 1000
-        inference_joules = total_joules
+        meas = []
+        for _ in tqdm(
+            range(num_runs), desc=f"Measuring energy for batch_size={batch_size}"
+        ):
+            meas.append(p_est.estimate_fn_power(test_fn)[0] / 1000)
+        inference_joules = float(np.array(meas).mean())
     except Exception:
         pass
 
@@ -386,11 +391,13 @@ def benchmark(
             # Energy measurement
             energy_joules = measure_energy(
                 model,
-                sample,
+                s,
                 model_device,
                 transfer_to_device_fn,
-                print_details,
-                print_fn,
+                num_runs=max(1, num_runs // 10),
+                batch_size=bs,
+                include_transfer_costs=True,
+                print_fn=print_fn,
             )
             if _is_valid(energy_joules):
                 energy_kwh = energy_joules / 3.6e6
