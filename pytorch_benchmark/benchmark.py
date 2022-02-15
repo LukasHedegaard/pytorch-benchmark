@@ -324,34 +324,40 @@ def benchmark(
         results["flops"] = flops
         print_fn(f"Model FLOPs: {flops} ({format_num(flops)})")
 
-    # Measure Allocated Memory
-    if model_device.type == "cuda":
-        pre_mem, post_mem, max_mem = measure_allocated_memory(
-            model, sample, model_device, transfer_to_device_fn, print_details
-        )
-        results["pre_inference_memory"] = pre_mem
-        results["max_inference_memory"] = max_mem
-        results["post_inference_memory"] = post_mem
-        print_fn(
-            f"Allocated GPU memory prior to inference: {pre_mem} ({format_num(pre_mem, bytes=True)})"
-        )
-        print_fn(
-            f"Allocated GPU memory after to inference: {post_mem} ({format_num(post_mem, bytes=True)})"
-        )
-        print_fn(
-            f"Max allocated GPU memory during inference: {max_mem} ({format_num(max_mem, bytes=True)})"
-        )
-    else:
-        logger.warning(
-            "Measurement of allocated memory is only available on CUDA devices"
-        )
-
     # Measure inference timing
+    memory = {}
     timing = {}
     energy = {}
     with torch.no_grad():
         for bs in sorted(set([1, batch_size])):
             s = sample1 if bs == 1 else sample
+
+            # Measure Allocated Memory
+            if model_device.type == "cuda":
+                pre_mem, post_mem, max_mem = measure_allocated_memory(
+                    model, sample, model_device, transfer_to_device_fn, print_details
+                )
+                memory[f"batch_size_{bs}"] = {
+                    "pre_inference_bytes": pre_mem,
+                    "max_inference_bytes": max_mem,
+                    "post_inference_bytes": post_mem,
+                    "pre_inference": format_num(pre_mem, bytes=True),
+                    "max_inference": format_num(max_mem, bytes=True),
+                    "post_inference": format_num(post_mem, bytes=True),
+                }
+                print_fn(
+                    fmt(
+                        {
+                            f"Memory results (batch_size={bs})": memory[
+                                f"batch_size_{bs}"
+                            ]
+                        }
+                    )
+                )
+            else:
+                logger.warning(
+                    "Measurement of allocated memory is only available on CUDA devices"
+                )
 
             # Inference timing
             warm_up(
