@@ -19,23 +19,6 @@ def _is_valid(val):
     return val == val
 
 
-def try_custom_warmup(model, shape):
-    # Allow custom warm-up function defined in model, e.g.
-    # class Model:
-    #
-    #   def warm_up(self, input_shape: List[int]):
-    #       ...
-    success = False
-    try:
-        if hasattr(model, "warm_up"):
-            model.warm_up(shape)
-            success = True
-    except Exception:
-        pass
-
-    return success
-
-
 def measure_flops(model, sample, print_details=False):
     flops = _INVALID
     try:
@@ -286,6 +269,7 @@ def benchmark(
     sample_with_batch_size1: Any = None,
     batch_size: int = None,
     print_fn=logger.info,
+    warm_up_fn=warm_up,
 ):
     results = {}
     batch_size = batch_size or sample.shape[0]
@@ -322,7 +306,14 @@ def benchmark(
         print_fn(f"Model parameters: {params} ({format_num(params)})")
 
     # Measure FLOPs
-    try_custom_warmup(model, sample1)
+    warm_up_fn(
+        model,
+        sample1,
+        model_device,
+        transfer_to_device_fn,
+        num_runs=1,
+        batch_size=1,
+    )
 
     flops = measure_flops(model, sample1, print_details)
     if _is_valid(flops):
@@ -365,7 +356,7 @@ def benchmark(
                 )
 
             # Inference timing
-            warm_up(
+            warm_up_fn(
                 model,
                 s,
                 model_device,

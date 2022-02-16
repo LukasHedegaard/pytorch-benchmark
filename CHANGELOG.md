@@ -8,6 +8,11 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 
 ## [Unreleased]
+### Removed
+- `try_custom_warmup`.
+
+### Added
+- `warm_up_fn` overload option.
 
 
 ## [0.3.0] - 2022-02-15]
