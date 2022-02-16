@@ -261,8 +261,7 @@ Trying to benchmark a custom class, which is not a `torch.nn.Module`?
 
 ## Acknowledgement
 This work has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement No 871449 (OpenDR).
-It was developed for benchmarking tools in [OpenDR](https://github.com/opendr-eu/opendr), a non-proprietary toolkit for deep learning based functionalities for robotics and vision. Likewise,
-the NVIDIA Jetson energy measurement used in this tool was originally developed for OpenDr by [Dr. Nikolaos Passalis](https://github.com/passalis).
+It was developed for benchmarking tools in [OpenDR](https://github.com/opendr-eu/opendr), a non-proprietary toolkit for deep learning based functionalities for robotics and vision.
 
 
 ## Citation
