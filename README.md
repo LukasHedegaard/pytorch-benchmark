@@ -252,7 +252,7 @@ results = benchmark(model, sample, num_runs=100)
 ## How we benchmark
 The overall flow can be summarized with the diagram shown below (best viewed on GitHub):
 ```mermaid
-flowchart LR;
+flowchart TB;
     A([Start]) --> B
     B(prepare_samples)
     B --> C[get_machine_info]
