@@ -10,6 +10,15 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 ## [Unreleased]
 
 
+## [0.3.1] - 2022-02-17]
+### Removed
+- `try_custom_warmup`.
+
+### Added
+- `warm_up_fn` overload option.
+- Support for FLOPs count in torch.nn.Module with input other than Tensor.
+
+
 ## [0.3.0] - 2022-02-15]
 ### Added
 - Memory measurement for each batch size.

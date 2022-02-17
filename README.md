@@ -249,9 +249,45 @@ results = benchmark(model, sample, num_runs=100)
 
 ... Your turn
 
+## How we benchmark
+The overall flow can be summarized with the diagram shown below (best viewed on GitHub):
+```mermaid
+flowchart TB;
+    A([Start]) --> B
+    B(prepare_samples)
+    B --> C[get_machine_info]
+    C --> D[measure_params]
+    D --> E[warm_up, batch_size=1]
+    E --> F[measure_flops]
+    
+    subgraph SG[Repeat for batch_size 1 and x]
+        direction TB
+        G[measure_allocated_memory]
+        G --> H[warm_up, given batch_size]
+        H --> I[measure_detailed_inference_timing]
+        I --> J[measure_repeated_inference_timing]
+        J --> K[measure_energy]
+    end
+
+    F --> SG
+    SG --> END([End])
+```
+
+In cases where the sample and model don't reside on the same device (e.g. if a GPU is used for inference), we measure timing in three parts: `cpu_to_gpu`, `on_device_inference`, and `gpu_to_cpu`, as well as a sum of the three, `total`. The inference flow is shown below:
+
+```mermaid
+flowchart LR;
+    A([sample])
+    A --> B[cpu -> gpu]
+    B --> C[model __call__]
+    C --> D[gpu -> cpu]
+    D --> E([result])
+```
+
 ## Advanced use
 Trying to benchmark a custom class, which is not a `torch.nn.Module`?
-- You can pass custom functions to `benchmark` as seen in [this example](tests/test_custom_class.py).
+You can pass custom functions to `benchmark` as seen in [this example](tests/test_custom_class.py).
+
 
 ## Limitations
 - Allocated memory measurements are only available on CUDA devices.
