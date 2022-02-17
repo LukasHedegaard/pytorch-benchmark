@@ -13,6 +13,7 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ### Added
 - `warm_up_fn` overload option.
+- Support for FLOPs count in torch.nn.Module with input other than Tensor.
 
 
 ## [0.3.0] - 2022-02-15]

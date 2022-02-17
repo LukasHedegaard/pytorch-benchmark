@@ -1,3 +1,4 @@
+import inspect
 from logging import getLogger
 from time import time
 from typing import Any, Callable
@@ -19,14 +20,26 @@ def _is_valid(val):
     return val == val
 
 
+def get_call_arg_names(module_or_fn):
+    if isinstance(module_or_fn, torch.nn.Module):
+        return inspect.getfullargspec(module_or_fn.forward)[0][1:]
+    return inspect.getfullargspec(module_or_fn)[0]
+
+
 def measure_flops(model, sample, print_details=False):
     flops = _INVALID
+
+    def input_constructor(*args, **kwrags):
+        nonlocal sample
+        return {get_call_arg_names(model)[0]: sample}
+
     try:
         flops, _ = get_model_complexity_info(
             model,
-            tuple(sample.shape[1:]),
-            as_strings=False,
+            (1,),  # dummy
             print_per_layer_stat=print_details,
+            as_strings=False,
+            input_constructor=input_constructor,
             verbose=print_details,
         )
         flops = int(flops)
