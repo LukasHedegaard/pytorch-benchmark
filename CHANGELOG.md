@@ -8,6 +8,9 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 
 ## [Unreleased]
+
+
+## [0.3.1] - 2022-02-17]
 ### Removed
 - `try_custom_warmup`.
 
