@@ -375,7 +375,7 @@ def benchmark(
                 model_device,
                 transfer_to_device_fn,
                 num_runs=max(1, num_runs // 10),
-                batch_size=batch_size,
+                batch_size=bs,
             )
             if print_details:
                 measure_detailed_inference_timing(model, s, model_device)
