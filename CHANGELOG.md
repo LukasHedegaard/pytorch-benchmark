@@ -10,7 +10,13 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 ## [Unreleased]
 
 
-## [0.3.1] - 2022-02-17]
+## [0.3.2] - - 2022-02-18
+
+### Fixed
+- Warm up batch size
+
+
+## [0.3.1] - 2022-02-17
 ### Removed
 - `try_custom_warmup`.
 
@@ -19,7 +25,7 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 - Support for FLOPs count in torch.nn.Module with input other than Tensor.
 
 
-## [0.3.0] - 2022-02-15]
+## [0.3.0] - 2022-02-15
 ### Added
 - Memory measurement for each batch size.
 - Repeated energy measurement.
@@ -28,22 +34,22 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 - Number formatting to use u instead of µ.
 
 
-## [0.2.2] - 2022-02-14]
+## [0.2.2] - 2022-02-14
 ### Added
 - Option to redirect info prints.
 
 
-## [0.2.1] - 2022-02-14]
+## [0.2.1] - 2022-02-14
 ### Fixed
 - Added missing with torch.no_grad
 
 
-## [0.2.0] - 2022-02-11]
+## [0.2.0] - 2022-02-11
 ### Added
 - Overloads for benchmark parameters and functions to allow benchmark of custom classes.
 
 
-## [0.1.2] - 2022-02-10]
+## [0.1.2] - 2022-02-10
 ### Fixed
 - GPU compatibility.
 
@@ -51,6 +57,6 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 - Carbon-tracker energy measurement. Library is still too immature at this point.
 
 
-## [0.1.1] - 2022-02-10]
+## [0.1.1] - 2022-02-10
 ### Added
 - Initial version.
