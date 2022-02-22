@@ -420,6 +420,8 @@ def benchmark(
                 )
 
     results["timing"] = timing
+    if memory:
+        results["memory"] = memory
     if energy:
         results["energy"] = energy
 
