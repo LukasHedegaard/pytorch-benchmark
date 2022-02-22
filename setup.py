@@ -25,7 +25,7 @@ def from_file(file_name: str = "requirements.txt", comment_char: str = "#"):
 
 setup(
     name="pytorch-benchmark",
-    version="0.3.3",
+    version="0.3.4",
     description="Easily benchmark PyTorch model FLOPs, latency, throughput, max allocated memory and energy consumption in one go.",
     long_description=long_description(),
     long_description_content_type="text/markdown",

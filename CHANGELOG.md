@@ -9,17 +9,22 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.4] - 2022-02-22
+
+### Fixed
+- Add missing memory to results.
+
 
 ## [0.3.3] - 2022-02-22
 
 ### Fixed
-- Memory measurement for bs=1
+- Memory measurement for bs=1.
 
 
 ## [0.3.2] - 2022-02-18
 
 ### Fixed
-- Warm up batch size
+- Warm up batch size.
 
 
 ## [0.3.1] - 2022-02-17
