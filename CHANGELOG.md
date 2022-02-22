@@ -9,6 +9,11 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.4] - 2022-02-22
+
+### Fixed
+- Add missing memory to results
+
 
 ## [0.3.3] - 2022-02-22
 
