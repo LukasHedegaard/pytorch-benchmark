@@ -344,7 +344,7 @@ def benchmark(
             # Measure Allocated Memory
             if model_device.type == "cuda":
                 pre_mem, post_mem, max_mem = measure_allocated_memory(
-                    model, sample, model_device, transfer_to_device_fn, print_details
+                    model, s, model_device, transfer_to_device_fn, print_details
                 )
                 memory[f"batch_size_{bs}"] = {
                     "pre_inference_bytes": pre_mem,
@@ -386,7 +386,7 @@ def benchmark(
                 model_device,
                 transfer_to_device_fn,
                 num_runs,
-                batch_size,
+                bs,
             )
             print_fn(
                 fmt({f"Timing results (batch_size={bs})": timing[f"batch_size_{bs}"]})
