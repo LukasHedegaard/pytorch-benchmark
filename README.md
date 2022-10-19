@@ -11,9 +11,6 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
   <a href="https://pepy.tech/project/pytorch-benchmark">
     <img src="https://pepy.tech/badge/pytorch-benchmark/month" height="20">
   </a>
-  <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
-    <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=B91XGSKSFJ"/>
-  </a>
   <a href="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/overview/main">
     <img src="https://www.codefactor.io/repository/github/lukashedegaard/pytorch-benchmark/badge/main" alt="CodeFactor" />
   </a>
@@ -23,7 +20,13 @@ __Easily benchmark model inference FLOPs, latency, throughput, max allocated mem
   <a href="https://github.com/psf/black">
     <img src="https://img.shields.io/badge/code%20style-black-000000.svg" height="20">
   </a>
+  <a href="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark">
+    <img src="https://codecov.io/gh/LukasHedegaard/pytorch-benchmark/branch/main/graph/badge.svg?token=B91XGSKSFJ"/>
+  </a>
+   <sup>*</sup>
 </div>
+
+###### \*Actual coverage is higher as GPU-related code is skipped by Codecov
 
 ## Install 
 ```bash
@@ -301,7 +304,7 @@ It was developed for benchmarking tools in [OpenDR](https://github.com/opendr-eu
 
 
 ## Citation
-If you like the tool and use it in you research, please consider citing it:
+If you like the tool and use it in research, please consider citing it:
 ```bibtex
 @article{hedegaard2022pytorchbenchmark,
   title={PyTorch Benchmark},
