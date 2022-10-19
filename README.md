@@ -306,10 +306,12 @@ It was developed for benchmarking tools in [OpenDR](https://github.com/opendr-eu
 ## Citation
 If you like the tool and use it in research, please consider citing it:
 ```bibtex
-@article{hedegaard2022pytorchbenchmark,
-  title={PyTorch Benchmark},
-  author={Lukas Hedegaard},
-  journal={GitHub. Note: https://github.com/LukasHedegaard/pytorch-benchmark},
-  year={2022}
+@software{hedegaard2022pytorchbenchmark,
+  author = {Hedegaard, Lukas},
+  doi = {10.5281/zenodo.7223585},
+  month = {10},
+  title = {{PyTorch-Benchmark}},
+  version = {0.3.5},
+  year = {2022}
 }
 ```
