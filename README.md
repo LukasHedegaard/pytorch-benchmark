@@ -39,7 +39,7 @@ from torchvision.models import efficientnet_b0
 from pytorch_benchmark import benchmark
 
 
-model = efficientnet_b0()
+model = efficientnet_b0().to("cpu")  # Model device sets benchmarking device
 sample = torch.randn(8, 3, 224, 224)  # (B, C, H, W)
 results = benchmark(model, sample, num_runs=100)
 ```
