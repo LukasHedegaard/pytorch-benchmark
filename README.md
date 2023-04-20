@@ -275,7 +275,7 @@ flowchart TB;
     SG --> END([End])
 ```
 
-In cases where the sample and model don't reside on the same device (e.g. if a GPU is used for inference), we measure timing in three parts: `cpu_to_gpu`, `on_device_inference`, and `gpu_to_cpu`, as well as a sum of the three, `total`. The inference flow is shown below:
+Usually, the sample and model don't reside on the same device initially (e.g., a GPU holds the model while the sample is on CPU after being loaded from disk or collected as live data). Accordingly, we measure timing in three parts: `cpu_to_gpu`, `on_device_inference`, and `gpu_to_cpu`, as well as a sum of the three, `total`. Note that the `model.device()` determines the execution device. The inference flow is shown below:
 
 ```mermaid
 flowchart LR;
