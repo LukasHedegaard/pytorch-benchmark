@@ -6,7 +6,6 @@ from pytorch_benchmark import benchmark
 
 
 def test_example():
-
     model = efficientnet_b0()
 
     if torch.cuda.is_available():

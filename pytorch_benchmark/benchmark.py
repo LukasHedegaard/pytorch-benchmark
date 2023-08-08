@@ -108,7 +108,6 @@ def warm_up(
 def measure_detailed_inference_timing(
     model, sample, model_device, transfer_to_device_fn=torch.Tensor.to
 ):
-
     try:
         with torch.autograd.profiler.profile(
             use_cuda=(model_device.type == "cuda"), profile_memory=True
@@ -135,7 +134,6 @@ def measure_repeated_inference_timing(
     num_runs=100,
     batch_size: int = None,
 ):
-
     t_c2d = []
     t_inf = []
     t_d2c = []
@@ -146,14 +144,29 @@ def measure_repeated_inference_timing(
     ):
         start_on_cpu = time()
         device_sample = transfer_to_device_fn(sample, model_device)
-        start_on_device = time()
+
+        if model_device.type == "cuda":
+            start_event = torch.cuda.Event(enable_timing=True)
+            stop_event = torch.cuda.Event(enable_timing=True)
+            start_event.record()  # For GPU timing
+        start_on_device = time()  # For CPU timing
+
         device_result = model(device_sample)
-        stop_on_device = time()
+
+        if model_device.type == "cuda":
+            stop_event.record()
+            torch.cuda.synchronize()
+            elapsed_on_device = stop_event.elapsed_time(start_event)
+            stop_on_device = time()
+        else:
+            stop_on_device = time()
+            elapsed_on_device = stop_on_device - start_on_device
+
         transfer_to_device_fn(device_result, "cpu")
         stop_on_cpu = time()
 
         t_c2d.append(start_on_device - start_on_cpu)
-        t_inf.append(stop_on_device - start_on_device)
+        t_inf.append(elapsed_on_device)
         t_d2c.append(stop_on_cpu - stop_on_device)
         t_tot.append(stop_on_cpu - start_on_cpu)
 
@@ -328,7 +341,11 @@ def benchmark(
         batch_size=1,
     )
 
-    flops = measure_flops(model, sample1, print_details)
+    with torch.no_grad():
+        flops = measure_flops(
+            model, transfer_to_device_fn(sample1, model_device), print_details
+        )
+
     if _is_valid(flops):
         results["flops"] = flops
         print_fn(f"Model FLOPs: {flops} ({format_num(flops)})")
