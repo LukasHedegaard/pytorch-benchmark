@@ -146,14 +146,29 @@ def measure_repeated_inference_timing(
     ):
         start_on_cpu = time()
         device_sample = transfer_to_device_fn(sample, model_device)
-        start_on_device = time()
+
+        if model_device.type == "cuda":
+            start_event = torch.cuda.Event(enable_timing=True)
+            stop_event = torch.cuda.Event(enable_timing=True)
+            start_event.record()  # For GPU timing
+        start_on_device = time()  # For CPU timing
+
         device_result = model(device_sample)
-        stop_on_device = time()
+
+        if model_device.type == "cuda":
+            stop_event.record()
+            torch.cuda.synchronize()
+            elapsed_on_device = stop_event.elapsed_time(start_event)
+            stop_on_device = time()
+        else:
+            stop_on_device = time()
+            elapsed_on_device = stop_on_device - start_on_device
+
         transfer_to_device_fn(device_result, "cpu")
         stop_on_cpu = time()
 
         t_c2d.append(start_on_device - start_on_cpu)
-        t_inf.append(stop_on_device - start_on_device)
+        t_inf.append(elapsed_on_device)
         t_d2c.append(stop_on_cpu - stop_on_device)
         t_tot.append(stop_on_cpu - start_on_cpu)
 
