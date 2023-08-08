@@ -9,6 +9,12 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.5] - 2023-08-08
+### Fixed
+- Updated on-gpu model benchmaking with best-practices on `cuda.Event` and `cuda.synchronize`.
+- FLOPs measurement error on CUDA.
+
+
 ## [0.3.4] - 2022-02-22
 
 ### Fixed
