@@ -9,13 +9,17 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.2.1] - 2022-02-11
+### Fixed
+- Updated on-gpu model benchmaking with best-practices on `cuda.Event` and `cuda.synchronize`.
 
-## [0.2.0] - 2022-02-11]
+
+## [0.2.0] - 2022-02-11
 ### Added
 - Overloads for benchmark parameters and functions to allow benchmark of custom classes.
 
 
-## [0.1.2] - 2022-02-10]
+## [0.1.2] - 2022-02-10
 ### Fixed
 - GPU compatibility.
 
@@ -23,6 +27,6 @@ From v1.0.0 and on, the project will adherence strictly to Semantic Versioning.
 - Carbon-tracker energy measurement. Library is still too immature at this point.
 
 
-## [0.1.1] - 2022-02-10]
+## [0.1.1] - 2022-02-10
 ### Added
 - Initial version.
