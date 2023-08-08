@@ -108,7 +108,6 @@ def warm_up(
 def measure_detailed_inference_timing(
     model, sample, model_device, transfer_to_device_fn=torch.Tensor.to
 ):
-
     try:
         with torch.autograd.profiler.profile(
             use_cuda=(model_device.type == "cuda"), profile_memory=True
@@ -135,7 +134,6 @@ def measure_repeated_inference_timing(
     num_runs=100,
     batch_size: int = None,
 ):
-
     t_c2d = []
     t_inf = []
     t_d2c = []
