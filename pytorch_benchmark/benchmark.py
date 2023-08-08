@@ -343,7 +343,11 @@ def benchmark(
         batch_size=1,
     )
 
-    flops = measure_flops(model, sample1, print_details)
+    with torch.no_grad():
+        flops = measure_flops(
+            model, transfer_to_device_fn(sample1, model_device), print_details
+        )
+
     if _is_valid(flops):
         results["flops"] = flops
         print_fn(f"Model FLOPs: {flops} ({format_num(flops)})")
